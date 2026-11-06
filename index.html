@@ -4,52 +4,63 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Календар подій</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&family=Unbounded:wght@600;700&display=swap">
 <style>
-:root{--bg:#f2f5fa;--card:#fff;--ink:#16233a;--mute:#66758f;--line:#dde4ef;--pri:#2446c9;--pri-ink:#fff;--bad:#d6453d;--ok:#1f9d63;--r:14px}
-:root[data-t=dark]{--bg:#0f1624;--card:#17213a;--ink:#e8edf8;--mute:#8d9bb5;--line:#26324f;--pri:#6f8cff;--pri-ink:#0f1624;--bad:#ff7a70;--ok:#4fd19a}
+:root{--bg:#f3f5ff;--card:#fff;--ink:#1d2144;--mute:#6b7194;--line:#e0e5fa;--pri:#3b5bff;--pri-ink:#fff;--bad:#ff4d3d;--ok:#12a566;--r:20px}
+:root[data-t=dark]{--bg:#12142b;--card:#1c1f3d;--ink:#eef0ff;--mute:#9aa0c9;--line:#2c3060;--pri:#7d93ff;--pri-ink:#12142b;--bad:#ff7d6e;--ok:#46d79b}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Onest,system-ui,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px}
-button.p{background:var(--pri);color:var(--pri-ink);border-color:var(--pri);font-weight:500}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 20px}
-h1{font-size:20px;margin:0 auto 0 0;font-weight:700}
+button{cursor:pointer;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:7px 13px;font-weight:500}
+button:hover{border-color:var(--pri)}
+button.p{background:var(--pri);color:var(--pri-ink);border-color:var(--pri);font-weight:700;box-shadow:0 3px 0 color-mix(in srgb,var(--pri) 65%,#000)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--pri) 45%,transparent);outline-offset:1px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:22px 20px 16px;max-width:1200px;margin:auto}
+h1{font:700 24px/1.1 Unbounded,Onest,sans-serif;margin:0 auto 0 0}
+h1 small{display:block;font:400 14px Onest,sans-serif;color:var(--mute);margin-top:6px;text-transform:capitalize}
 main{padding:0 20px 40px;max-width:1200px;margin:auto}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
-.chip{border-radius:99px;padding:4px 12px;font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.chip{border-radius:99px;padding:5px 14px;font-size:13px}
 .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.alert{background:color-mix(in srgb,var(--bad) 14%,var(--card));border:1px solid var(--bad);border-radius:var(--r);padding:10px 14px;margin-bottom:14px}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-bottom:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
-.card h2{font-size:15px;margin:0 0 10px}
-.it{display:block;width:100%;text-align:left;border:0;border-left:4px solid var(--c);border-radius:6px;background:color-mix(in srgb,var(--c) 9%,var(--card));padding:8px 10px;margin-bottom:8px}
-.it b{display:block}.it small{color:var(--mute)}
-.bar{height:5px;border-radius:9px;background:var(--line);margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--c)}
-.dl{float:right;font-weight:700;font-size:13px;color:var(--ok)}.dl.u{color:var(--bad)}
+.alert{background:color-mix(in srgb,var(--bad) 12%,var(--card));border:2px solid var(--bad);border-radius:16px;padding:10px 16px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:16px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:16px}
+.card.g,.card.y,.card.b{background:color-mix(in srgb,var(--t) 7%,var(--card));border-color:color-mix(in srgb,var(--t) 28%,var(--line))}
+.g{--t:#12a566}.y{--t:#ff4d3d}.b{--t:#3b5bff}
+.card h2{font:700 15px Unbounded,Onest,sans-serif;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.card.g h2::before,.card.y h2::before,.card.b h2::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--t)}
+.it{display:grid;grid-template-columns:1fr;column-gap:12px;align-items:center;width:100%;text-align:left;border:0;border-radius:14px;background:var(--card);box-shadow:inset 5px 0 0 var(--c);padding:10px 12px 10px 17px;margin-bottom:8px;font-weight:400}
+.it:has(.dl){grid-template-columns:54px 1fr;padding-left:10px;box-shadow:none;border:2px solid var(--line)}
+.it b{font-weight:700}.it small{color:var(--mute)}
+.bar{grid-column:1/-1;height:6px;border-radius:9px;background:var(--line);margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--c);border-radius:9px}
+.dl{display:flex;flex-direction:column;align-items:center;justify-content:center;width:54px;height:54px;border-radius:14px;grid-row:span 2;font-size:11px;font-weight:700;background:color-mix(in srgb,var(--ok) 16%,var(--card));color:var(--ok)}
+.dl.u{background:color-mix(in srgb,var(--bad) 16%,var(--card));color:var(--bad)}
+.dl em{font:700 18px/1 Unbounded,Onest,sans-serif;font-style:normal;margin-bottom:2px}
 .empty{color:var(--mute);margin:4px 0}
-.mh{display:flex;align-items:center;gap:8px;margin-bottom:10px}.mh h2{margin:0 auto 0 0;text-transform:capitalize}
-.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.dn{color:var(--mute);font-size:12px;text-align:center}
-.day{min-height:84px;border:1px solid var(--line);border-radius:8px;padding:3px;overflow:hidden}
-.day.o{opacity:.45}.day.t{border-color:var(--pri);box-shadow:inset 0 0 0 1px var(--pri)}
+.mh{display:flex;align-items:center;gap:8px;margin-bottom:12px}.mh h2{font:700 17px Unbounded,Onest,sans-serif;margin:0 auto 0 0;text-transform:capitalize}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.dn{color:var(--mute);font-size:12px;text-align:center;font-weight:500}
+.day{min-height:88px;border:2px solid var(--line);border-radius:12px;padding:4px;overflow:hidden}
+.day.o{opacity:.4}.day.t{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 8%,var(--card))}
 .day>span{font-size:12px;color:var(--mute)}
-.ch{display:block;width:100%;text-align:left;border:0;border-radius:4px;padding:1px 4px;margin-top:2px;font-size:11px;background:var(--c);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch.d{background:none;color:var(--c);border:1px dashed var(--c)}
-dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--card);color:var(--ink);width:min(520px,94vw);padding:18px}
-dialog::backdrop{background:#0008}
-label{display:block;font-size:13px;color:var(--mute);margin-top:10px}
-input,select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:var(--bg);margin-top:3px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.act{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.day.t>span{background:var(--pri);color:var(--pri-ink);border-radius:99px;padding:1px 7px;font-weight:700}
+.ch{display:block;width:100%;text-align:left;border:0;border-radius:6px;padding:1px 5px;margin-top:3px;font-size:11px;font-weight:500;background:var(--c);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.d{background:none;color:var(--c);border:1.5px dashed var(--c)}
+dialog{border:0;border-top:8px solid var(--pri);border-radius:var(--r);background:var(--card);color:var(--ink);width:min(540px,94vw);padding:20px 22px;box-shadow:0 20px 60px #0004}
+dialog::backdrop{background:#12142b99}
+dialog h2{font:700 18px Unbounded,Onest,sans-serif}
+label{display:block;font-size:13px;font-weight:500;color:var(--ink);margin-top:12px}
+input,select,textarea{width:100%;border:2px solid var(--line);border-radius:12px;padding:9px 11px;background:var(--bg);margin-top:4px}
+input:focus,select:focus,textarea:focus{border-color:var(--pri)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.act{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
 .hide{display:none!important}
-@media(max-width:640px){.day{min-height:62px}.ch{font-size:10px}.row{grid-template-columns:1fr}}
+@media(max-width:640px){.cal{gap:3px}.day{min-height:58px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px;padding:3px}.day>span{width:100%}.ch{width:9px;height:9px;border-radius:50%;padding:0;margin:0;font-size:0}.ch.d{border-width:2px}.row{grid-template-columns:1fr}h1{font-size:20px}}
 </style>
 </head>
 <body>
 <header>
- <h1>Календар подій</h1>
+ <h1>Календар подій<small id="dt"></small></h1>
  <button id="bNew" class="p hide">+ Подія</button>
  <button id="bImp" class="hide">Імпорт</button>
  <button id="bExp">Експорт CSV</button>
@@ -62,9 +73,9 @@ input,select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;
  <div id="chips" class="chips"></div>
  <div id="alert"></div>
  <div class="grid3">
-  <section class="card"><h2>Тривають зараз</h2><div id="now"></div></section>
-  <section class="card"><h2>Дедлайни реєстрації</h2><div id="dls"></div></section>
-  <section class="card"><h2>Найближчі події</h2><div id="soon"></div></section>
+  <section class="card g"><h2>Тривають зараз</h2><div id="now"></div></section>
+  <section class="card y"><h2>Дедлайни реєстрації</h2><div id="dls"></div></section>
+  <section class="card b"><h2>Найближчі події</h2><div id="soon"></div></section>
  </div>
  <section class="card">
   <div class="mh"><h2 id="mt"></h2><button id="pv">‹</button><button id="td">Сьогодні</button><button id="nx">›</button></div>
@@ -94,11 +105,12 @@ input,select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;
  <div class="act"><button type="button" id="logX">Скасувати</button><button class="p">Увійти</button></div>
 </form></dialog>
 
+<script src="config.js"></script>
 <script>
 // 1) Вставте ключі з Supabase (Project Settings → API). Якщо порожньо — працює демо-режим у браузері.
-const CFG={url:'https://fxbrpblapcuygbpjvooy.supabase.co.',key:'sb_publishable_YMKQoAVI9Qf6-zeb58Kmjg_V7pGr3Zo'};
+const CFG=window.CFG||{url:'',key:''}; // ключі беруться з config.js
 
-const CATS={'Конкурси':'#d6453d','Олімпіади':'#2446c9','Шкільні заходи':'#1f9d63','Гранти':'#c88a0a','Навчання':'#8a5bd6'};
+const CATS={'Конкурси':'#ff5a47','Олімпіади':'#3b5bff','Шкільні заходи':'#12a566','Гранти':'#f29b00','Навчання':'#8b5cf6'};
 const F=['title','category','start_at','end_at','reg_deadline','link','responsible','participants','notes'];
 const $=s=>document.querySelector(s);
 const demo=!CFG.url;
@@ -134,13 +146,15 @@ const vis=()=>ev.filter(e=>!cat||e.category==cat);
 function item(e,extra=''){const b=document.createElement('button');b.className='it';b.style.setProperty('--c',col(e));b.innerHTML=extra+`<b>${esc(e.title)}</b><small>${esc(e.category||'')} · ${fmt(D(e.start_at))}</small>`;b.onclick=()=>openEv(e);return b}
 const fill=(id,arr,msg)=>{const n=$(id);n.replaceChildren(...(arr.length?arr:[Object.assign(document.createElement('p'),{className:'empty',textContent:msg})]))};
 function left(d){const ms=d-Date.now(),h=ms/36e5;if(h<1)return'менше години';if(h<24)return Math.floor(h)+' год';return Math.ceil(h/24)+' дн'}
+function cd(d){const h=(d-Date.now())/36e5;return h<1?'<em>&lt;1</em>год':h<24?`<em>${Math.floor(h)}</em>год`:`<em>${Math.ceil(h/24)}</em>дн`}
 function render(){
+ $('#dt').textContent=new Date().toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'});
  const now=Date.now(),L=vis();
  $('#chips').replaceChildren(...['',...Object.keys(CATS)].map(c=>{const b=document.createElement('button');b.className='chip'+(cat==c?' on':'');b.textContent=c||'Усі';if(c)b.style.borderColor=CATS[c];b.onclick=()=>{cat=c;render()};return b}));
  const run=L.filter(e=>{const s=D(e.start_at),f=D(e.end_at)||new Date(+s+36e5);return s<=now&&now<=f});
  fill('#now',run.map(e=>{const s=+D(e.start_at),f=+(D(e.end_at)||s+36e5),x=item(e);x.insertAdjacentHTML('beforeend',`<div class="bar" style="--c:${col(e)}"><i style="width:${Math.min(100,(now-s)/(f-s)*100)}%"></i></div>`);return x}),'Зараз нічого не відбувається');
  const dl=L.filter(e=>e.reg_deadline&&D(e.reg_deadline)>now).sort((a,b)=>D(a.reg_deadline)-D(b.reg_deadline));
- fill('#dls',dl.slice(0,6).map(e=>{const d=D(e.reg_deadline),u=d-now<864e5*2;return item({...e,start_at:e.reg_deadline},`<span class="dl${u?' u':''}">${left(d)}</span>`)}),'Відкритих реєстрацій немає');
+ fill('#dls',dl.slice(0,6).map(e=>{const d=D(e.reg_deadline),u=d-now<864e5*2;return item({...e,start_at:e.reg_deadline},`<span class="dl${u?' u':''}">${cd(d)}</span>`)}),'Відкритих реєстрацій немає');
  const up=L.filter(e=>D(e.start_at)>now).sort((a,b)=>D(a.start_at)-D(b.start_at));
  fill('#soon',up.slice(0,6).map(e=>item(e)),'Немає запланованих подій');
  const hot=dl.filter(e=>D(e.reg_deadline)-now<864e5*3);
