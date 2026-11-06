@@ -56,6 +56,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pri)}
 .act{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
 .hide{display:none!important}
 @media(max-width:640px){.cal{gap:3px}.day{min-height:58px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px;padding:3px}.day>span{width:100%}.ch{width:9px;height:9px;border-radius:50%;padding:0;margin:0;font-size:0}.ch.d{border-width:2px}.row{grid-template-columns:1fr}h1{font-size:20px}}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}.tools input{flex:1;min-width:220px;margin:0}.tools select{width:auto;margin:0}
 </style>
 </head>
 <body>
@@ -70,6 +71,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pri)}
  <input type="file" id="file" accept=".csv,.ics" class="hide">
 </header>
 <main>
+ <div class="tools"><input id="q" type="search" placeholder="Пошук за назвою, відповідальним, учасником…"><select id="fs"><option value="">Усі статуси</option><option value="todo">Треба зареєструватись</option><option value="done">Зареєстровані</option><option value="skip">Без участі</option><option value="none">Без статусу</option></select></div>
  <div id="chips" class="chips"></div>
  <div id="alert"></div>
  <div class="grid3">
@@ -91,6 +93,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pri)}
  <div class="row"><label>Початок<input type="datetime-local" name="start_at" required></label>
  <label>Кінець<input type="datetime-local" name="end_at"></label></div>
  <label>Дедлайн реєстрації<input type="datetime-local" name="reg_deadline"></label>
+ <label>Статус реєстрації<select name="reg_status"><option value="">Не вказано</option><option value="todo">Треба зареєструватись</option><option value="done">Зареєстровані</option><option value="skip">Без участі</option></select></label>
  <label>Посилання<input type="url" name="link" placeholder="https://"></label>
  <label>Учасники<input name="participants" placeholder="Імена через кому"></label>
  <label>Нотатки<textarea name="notes" rows="2"></textarea></label>
@@ -111,7 +114,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--pri)}
 const CFG=window.CFG||{url:'',key:''}; // ключі беруться з config.js
 
 const CATS={'Конкурси':'#ff5a47','Олімпіади':'#3b5bff','Шкільні заходи':'#12a566','Гранти':'#f29b00','Навчання':'#8b5cf6'};
-const F=['title','category','start_at','end_at','reg_deadline','link','responsible','participants','notes'];
+const ST={todo:'⏳ Треба зареєструватись',done:'✓ Зареєстровані',skip:'Без участі'};
+const F=['title','category','start_at','end_at','reg_deadline','reg_status','link','responsible','participants','notes'];
 const $=s=>document.querySelector(s);
 const demo=!CFG.url;
 let ev=[],tok=localStorage.getItem('tok')||'',cat='',cur=new Date(),editId=null;
@@ -142,8 +146,8 @@ async function addMany(l){
  await load();alert('Імпортовано подій: '+l.length)}
 
 /* ---------- відображення ---------- */
-const vis=()=>ev.filter(e=>!cat||e.category==cat);
-function item(e,extra=''){const b=document.createElement('button');b.className='it';b.style.setProperty('--c',col(e));b.innerHTML=extra+`<b>${esc(e.title)}</b><small>${esc(e.category||'')} · ${fmt(D(e.start_at))}</small>`;b.onclick=()=>openEv(e);return b}
+const vis=()=>{const q=$('#q').value.trim().toLowerCase(),st=$('#fs').value;return ev.filter(e=>(!cat||e.category==cat)&&(!st||(st=='none'?!e.reg_status:e.reg_status==st))&&(!q||[e.title,e.category,e.responsible,e.participants,e.notes].join(' ').toLowerCase().includes(q)))};
+function item(e,extra=''){const b=document.createElement('button');b.className='it';b.style.setProperty('--c',col(e));b.innerHTML=extra+`<b>${esc(e.title)}</b><small>${esc(e.category||'')} · ${fmt(D(e.start_at))}${e.reg_status?' · '+ST[e.reg_status]:''}</small>`;b.onclick=()=>openEv(e);return b}
 const fill=(id,arr,msg)=>{const n=$(id);n.replaceChildren(...(arr.length?arr:[Object.assign(document.createElement('p'),{className:'empty',textContent:msg})]))};
 function left(d){const ms=d-Date.now(),h=ms/36e5;if(h<1)return'менше години';if(h<24)return Math.floor(h)+' год';return Math.ceil(h/24)+' дн'}
 function cd(d){const h=(d-Date.now())/36e5;return h<1?'<em>&lt;1</em>год':h<24?`<em>${Math.floor(h)}</em>год`:`<em>${Math.ceil(h/24)}</em>дн`}
@@ -153,7 +157,7 @@ function render(){
  $('#chips').replaceChildren(...['',...Object.keys(CATS)].map(c=>{const b=document.createElement('button');b.className='chip'+(cat==c?' on':'');b.textContent=c||'Усі';if(c)b.style.borderColor=CATS[c];b.onclick=()=>{cat=c;render()};return b}));
  const run=L.filter(e=>{const s=D(e.start_at),f=D(e.end_at)||new Date(+s+36e5);return s<=now&&now<=f});
  fill('#now',run.map(e=>{const s=+D(e.start_at),f=+(D(e.end_at)||s+36e5),x=item(e);x.insertAdjacentHTML('beforeend',`<div class="bar" style="--c:${col(e)}"><i style="width:${Math.min(100,(now-s)/(f-s)*100)}%"></i></div>`);return x}),'Зараз нічого не відбувається');
- const dl=L.filter(e=>e.reg_deadline&&D(e.reg_deadline)>now).sort((a,b)=>D(a.reg_deadline)-D(b.reg_deadline));
+ const dl=L.filter(e=>e.reg_deadline&&D(e.reg_deadline)>now&&!['done','skip'].includes(e.reg_status)).sort((a,b)=>D(a.reg_deadline)-D(b.reg_deadline));
  fill('#dls',dl.slice(0,6).map(e=>{const d=D(e.reg_deadline),u=d-now<864e5*2;return item({...e,start_at:e.reg_deadline},`<span class="dl${u?' u':''}">${cd(d)}</span>`)}),'Відкритих реєстрацій немає');
  const up=L.filter(e=>D(e.start_at)>now).sort((a,b)=>D(a.start_at)-D(b.start_at));
  fill('#soon',up.slice(0,6).map(e=>item(e)),'Немає запланованих подій');
@@ -170,8 +174,8 @@ function month(){
   const a=new Date(d.getFullYear(),d.getMonth(),d.getDate()),z=new Date(+a+864e5);
   const c=document.createElement('div');c.className='day'+(d.getMonth()!=m?' o':'')+(d.toDateString()==today?' t':'');
   c.innerHTML=`<span>${d.getDate()}</span>`;
-  L.forEach(e=>{const s=D(e.start_at),f=D(e.end_at)||s;if(s<z&&f>=a)c.append(chip(e,e.title,''));
-   const r=D(e.reg_deadline);if(r&&r>=a&&r<z)c.append(chip(e,'⏰ '+e.title,'d'))});
+  L.forEach(e=>{const s=D(e.start_at),f=D(e.end_at)||s;if(s<z&&f>=a)c.append(chip(e,(e.reg_status=='done'?'✓ ':'')+e.title,''));
+   const r=D(e.reg_deadline);if(r&&r>=a&&r<z&&!['done','skip'].includes(e.reg_status))c.append(chip(e,'⏰ '+e.title,'d'))});
   box.append(c)}}
 function chip(e,t,k){const b=document.createElement('button');b.className='ch '+k;b.style.setProperty('--c',col(e));b.textContent=t;b.title=t;b.onclick=()=>openEv(e);return b}
 
@@ -208,7 +212,7 @@ function csv(t){const rows=[];let r=[],c='',q=false;
   else if(ch=='\n'){r.push(c);rows.push(r);r=[];c=''}else if(ch!='\r')c+=ch}
  if(c||r.length){r.push(c);rows.push(r)}
  const h=rows.shift().map(x=>x.trim().replace(/^\uFEFF/,''));
- return rows.filter(r=>r.some(x=>x.trim())).map(r=>{const o={};F.forEach(k=>{const i=h.indexOf(k);let v=i>=0?(r[i]||'').trim():'';if(v&&/_at$|deadline/.test(k)){const d=new Date(v);v=isNaN(d)?null:d.toISOString()}o[k]=v||null});if(!CATS[o.category])o.category='Шкільні заходи';return o}).filter(o=>o.title&&o.start_at)}
+ return rows.filter(r=>r.some(x=>x.trim())).map(r=>{const o={};F.forEach(k=>{const i=h.indexOf(k);let v=i>=0?(r[i]||'').trim():'';if(v&&/_at$|deadline/.test(k)){const d=new Date(v);v=isNaN(d)?null:d.toISOString()}o[k]=v||null});if(!CATS[o.category])o.category='Шкільні заходи';if(!ST[o.reg_status])o.reg_status=null;return o}).filter(o=>o.title&&o.start_at)}
 function ics(t){
  t=t.replace(/\r?\n[ \t]/g,'');
  const pd=v=>{const m=(v||'').match(/(\d{4})(\d\d)(\d\d)(?:T(\d\d)(\d\d)(\d\d)(Z)?)?/);if(!m)return null;return(m[7]?new Date(Date.UTC(m[1],m[2]-1,m[3],m[4],m[5],m[6])):new Date(m[1],m[2]-1,m[3],m[4]||0,m[5]||0)).toISOString()};
@@ -235,6 +239,7 @@ function notify(){if(!('Notification'in window)||Notification.permission!='grant
  if(hot.length){new Notification('Дедлайн реєстрації за добу',{body:hot.map(e=>e.title).join(', ')});localStorage.setItem(k,1)}}
 $('#bBell').onclick=async()=>{if(!('Notification'in window))return alert('Браузер не підтримує сповіщення');
  const p=await Notification.requestPermission();alert(p=='granted'?'Нагадування увімкнено: сповіщення про дедлайни за добу з’являться, коли відкриєте календар.':'Сповіщення вимкнені в браузері');notify()};
+$('#q').oninput=render;$('#fs').onchange=render;
 uiAuth();load().then(notify);setInterval(render,6e4);
 </script>
 </body>
